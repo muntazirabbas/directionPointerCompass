@@ -22,15 +22,10 @@ export class HomePage implements OnInit, OnDestroy {
   compassDegree: number;
   cardinalPosition: string;
   magneticHeading: any = 0;
-  //Pakistan===> 30.3753° N, 69.3451
   latCoords: number = 0;
   lngCoords: number = 0;
-  //Mt.KYNA
   destLat: number = 0.1521;
   destLong: number = 37.3084;
-  // Makka 21.3891° N, 39.8579° E
-  // destLat: number = 21.3891;
-  // destLong: number = 39.8579;
   deviceSubscription: Subscription;
 
 
@@ -50,47 +45,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.deviceSubscription.unsubscribe();
   }
 
-  ionViewDidEnter() {
-    // console.log('dest-angle ', this.destinationAngle());
-    console.log('bearing-Angle ', this.angleFromCoordinate());
-    // this.rotateTriangle(this.destinationAngle());
-    // this.getBearingAngle();
-  }
-
-  // getBearingAngle() {
-  //   let lat1 = this.latCoords
-  //   let lon1 = this.lngCoords
-  //   let lat2 = this.destLat;
-  //   let lon2 = this.destLong;
-  //   let Δlong = lon2 - lon1;
-  //   let p1 = Math.sin(Δlong) * Math.cos(lat2);
-  //   let p2 = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(Δlong);
-  //   // let p2 =  Math.cos(lat1)*Math.sin(lat2) − Math.sin(lat1)*Math.cos(lat2)*Math.cos(Δlong)''
-  //   // let θ = Math.atan2(Math.sin(Δlong)*Math.cos(lat2), Math.cos(lat1)*Math.sin(lat2) − Math.sin(lat1)*Math.cos(lat2)*Math.cos(Δlong))
-  //   let bearing = Math.atan2(p1, p2);
-  //   // bearing = bearing * 180 / Math.PI;
-  //   // bearing = (bearing + 360) % 360;
-  //   console.log('bearing angle ', bearing);
-  // }
-
-  // destinationAngle = () => {
-  //   console.log('current loc', this.latCoords, "----", this.lngCoords);
-  //   console.log('destin  loc', this.destLat, "----", this.destLong);
-  //   let firstVal = Math.pow((this.latCoords - this.destLat), 2);
-  //   let secondVal = Math.pow((this.lngCoords - this.lngCoords), 2);
-  //   let h_secondVal = Math.pow((this.lngCoords - this.destLong), 2);
-  //   console.log('first val ', firstVal);
-  //   console.log('second val ', secondVal);
-  //   console.log('h_second val ', h_secondVal);
-  //   let base = Math.sqrt(firstVal - secondVal);
-  //   console.log('hyp -diff ', firstVal - h_secondVal)
-  //   let hypotenuse = Math.sqrt(firstVal + h_secondVal);
-  //   console.log('base val ', base);
-  //   console.log('hypont val ', hypotenuse);
-  //   let angle = Math.acos(base / hypotenuse);
-  //   console.log('angle ', angle);
-  //   return angle
-  // }
 
   angleFromCoordinate() {
     let lat1 = this.latCoords
@@ -149,7 +103,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   rotateTriangle(deg, deg2) {
-    console.log('deg1   ', deg, 'deg2   ', deg2);
+    // console.log('deg1   ', deg, 'deg2   ', deg2);
     let prev = -(deg) + 90;
     let _deg = -(deg) + 90 + (deg2);
     this.previousAngle = prev;
