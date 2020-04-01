@@ -1,0 +1,193 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {
+  DeviceOrientation,
+  DeviceOrientationCompassHeading
+} from '@ionic-native/device-orientation/ngx';
+import { Platform } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { TransformationType, Direction } from 'angular-coordinates';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+})
+export class HomePage implements OnInit, OnDestroy {
+  previousAngle = 0;
+  newAngle = 0;
+  direction = Direction;
+  bearingAngle: any = 0;
+  type = TransformationType;
+  compassDegree: number;
+  cardinalPosition: string;
+  magneticHeading: any = 0;
+  //Pakistan===> 30.3753° N, 69.3451
+  latCoords: number = 0;
+  lngCoords: number = 0;
+  //Mt.KYNA
+  destLat: number = 0.1521;
+  destLong: number = 37.3084;
+  // Makka 21.3891° N, 39.8579° E
+  // destLat: number = 21.3891;
+  // destLong: number = 39.8579;
+  deviceSubscription: Subscription;
+
+
+  constructor(
+    private deviceOrientation: DeviceOrientation,
+    private platform: Platform,
+    private http: HttpClient
+  ) { }
+
+  ngOnInit() {
+    this.platform.ready().then(() => {
+      this.deviceLocation();
+    });
+  }
+
+  ngOnDestroy() {
+    this.deviceSubscription.unsubscribe();
+  }
+
+  ionViewDidEnter() {
+    // console.log('dest-angle ', this.destinationAngle());
+    console.log('bearing-Angle ', this.angleFromCoordinate());
+    // this.rotateTriangle(this.destinationAngle());
+    // this.getBearingAngle();
+  }
+
+  // getBearingAngle() {
+  //   let lat1 = this.latCoords
+  //   let lon1 = this.lngCoords
+  //   let lat2 = this.destLat;
+  //   let lon2 = this.destLong;
+  //   let Δlong = lon2 - lon1;
+  //   let p1 = Math.sin(Δlong) * Math.cos(lat2);
+  //   let p2 = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(Δlong);
+  //   // let p2 =  Math.cos(lat1)*Math.sin(lat2) − Math.sin(lat1)*Math.cos(lat2)*Math.cos(Δlong)''
+  //   // let θ = Math.atan2(Math.sin(Δlong)*Math.cos(lat2), Math.cos(lat1)*Math.sin(lat2) − Math.sin(lat1)*Math.cos(lat2)*Math.cos(Δlong))
+  //   let bearing = Math.atan2(p1, p2);
+  //   // bearing = bearing * 180 / Math.PI;
+  //   // bearing = (bearing + 360) % 360;
+  //   console.log('bearing angle ', bearing);
+  // }
+
+  // destinationAngle = () => {
+  //   console.log('current loc', this.latCoords, "----", this.lngCoords);
+  //   console.log('destin  loc', this.destLat, "----", this.destLong);
+  //   let firstVal = Math.pow((this.latCoords - this.destLat), 2);
+  //   let secondVal = Math.pow((this.lngCoords - this.lngCoords), 2);
+  //   let h_secondVal = Math.pow((this.lngCoords - this.destLong), 2);
+  //   console.log('first val ', firstVal);
+  //   console.log('second val ', secondVal);
+  //   console.log('h_second val ', h_secondVal);
+  //   let base = Math.sqrt(firstVal - secondVal);
+  //   console.log('hyp -diff ', firstVal - h_secondVal)
+  //   let hypotenuse = Math.sqrt(firstVal + h_secondVal);
+  //   console.log('base val ', base);
+  //   console.log('hypont val ', hypotenuse);
+  //   let angle = Math.acos(base / hypotenuse);
+  //   console.log('angle ', angle);
+  //   return angle
+  // }
+
+  angleFromCoordinate() {
+    let lat1 = this.latCoords
+    let lon1 = this.lngCoords
+    let lat2 = this.destLat;
+    let lon2 = this.destLong;
+    let p1 = {
+      x: lat1,
+      y: lon1
+    };
+    let p2 = {
+      x: lat2,
+      y: lon2
+    };
+    var angleDeg = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+    this.bearingAngle = angleDeg;
+    return angleDeg;
+  }
+
+  deviceCompassInfo() {
+    this.deviceOrientation.getCurrentHeading().then(
+      (data: DeviceOrientationCompassHeading) => {
+        this.magneticHeading = data.magneticHeading;
+        this.rotateCompass(data.magneticHeading);
+        this.rotateTriangle(this.angleFromCoordinate(), data.magneticHeading);
+        this.compassDegree = Math.floor(data.magneticHeading);
+        this.cardinalPosition = this.getCardinal(this.compassDegree);
+      },
+      (error: any) => console.log(error)
+    );
+
+    this.deviceSubscription = this.deviceOrientation.watchHeading().subscribe(
+      (data: DeviceOrientationCompassHeading) => {
+        this.magneticHeading = data.magneticHeading;
+        this.rotateCompass(data.magneticHeading);
+        this.rotateTriangle(this.angleFromCoordinate(), data.magneticHeading);
+        this.compassDegree = Math.floor(data.magneticHeading);
+        this.cardinalPosition = this.getCardinal(this.compassDegree);
+      }
+    );
+  }
+
+  deviceLocation() {
+    this.http.get('https://geoip-db.com/json/')
+      .subscribe((data: any) => {
+        this.latCoords = data.latitude;
+        this.lngCoords = data.longitude;
+        this.rotateTriangle(this.angleFromCoordinate(), 90);
+        this.deviceCompassInfo();
+      },
+        (err) => console.log('err getting location ', err));
+  }
+
+  rotateCompass(deg) {
+    (<HTMLElement>document.querySelector('#image')).style.transform = `rotate(${-deg}deg)`;
+  }
+
+  rotateTriangle(deg, deg2) {
+    console.log('deg1   ', deg, 'deg2   ', deg2);
+    let prev = -(deg) + 90;
+    let _deg = -(deg) + 90 + (deg2);
+    this.previousAngle = prev;
+    this.newAngle = _deg;
+    (<HTMLElement>document.querySelector('#triangle')).style.transform = `rotate(${-_deg}deg)`;
+  }
+
+  getCardinal(angle) {
+    const directions = 8;
+    const degree = 360 / directions;
+    angle = angle + degree / 2;
+
+    if (angle >= 0 * degree && angle < 1 * degree) {
+      return 'N';
+    }
+    if (angle >= 1 * degree && angle < 2 * degree) {
+      return 'NE';
+    }
+    if (angle >= 2 * degree && angle < 3 * degree) {
+      return 'E';
+    }
+    if (angle >= 3 * degree && angle < 4 * degree) {
+      return 'SE';
+    }
+    if (angle >= 4 * degree && angle < 5 * degree) {
+      return 'S';
+    }
+    if (angle >= 5 * degree && angle < 6 * degree) {
+      return 'SW';
+    }
+    if (angle >= 6 * degree && angle < 7 * degree) {
+      return 'W';
+    }
+    if (angle >= 7 * degree && angle < 8 * degree) {
+      return 'NW';
+    }
+
+    return 'N';
+  }
+
+}

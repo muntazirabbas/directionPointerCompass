@@ -1,0 +1,36 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <ion-title>
+      {{cardinalPosition}} {{compassDegree}}&deg;
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <img id="image" src="assets/compass.png">
+  <img id="triangle" src="assets/blackArrow.png">
+  <img src="assets/compass-arrow.png">
+</ion-content>
+
+<ion-footer no-border>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" text-center>
+          <geo-coordinates [value]="latCoords" [direction]="direction.Latitude"></geo-coordinates>
+        </ion-col>
+        <ion-col size="6" text-center>
+          <geo-coordinates [value]="lngCoords" [direction]="direction.Longitude"></geo-coordinates>
+        </ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col text-center>
+          <div>Magnetic Heading: {{magneticHeading}}</div>
+          <div>Bearing Angle: {{bearingAngle}}</div>
+          <div>Previus Angle: {{previousAngle}}</div>
+          <div>New Angle: {{newAngle}}</div>
+        </ion-col>
+      </ion-row> -->
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

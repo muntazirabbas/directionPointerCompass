@@ -1,0 +1,35 @@
+ion-header {
+    ion-title {
+        margin: 0 auto;
+        text-align: center;
+        --color: black;
+        font-size: 30px;
+        margin-top: 20px;
+    }
+}
+
+ion-content {
+    img {
+        position: absolute;
+        max-width: 250px;
+        max-height: 250px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        top: 30%;
+    }
+    #triangle{
+        transform: rotate(436deg);
+    // max-width: 192px !important;
+    // max-height: 195px !important;
+    // top: 34% !important;
+    }
+}
+
+ion-footer {
+    geo-coordinates {
+        color: black;
+        font-weight: 500;
+        font-size: 18px;
+    }
+}
